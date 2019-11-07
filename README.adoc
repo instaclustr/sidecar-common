@@ -1,0 +1,6 @@
+== sidecar-common
+
+This library gathers all basic functionality for sidecar applications used in Instaclustr.
+
+Currently it is used primarily by Cassandra Kubernetes operator but in general can be reused for
+whatever CLI / sidecar application needed.
