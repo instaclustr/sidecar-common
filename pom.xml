@@ -151,6 +151,7 @@
   </dependencies>
 
   <build>
+    <finalName>sidecar-common</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

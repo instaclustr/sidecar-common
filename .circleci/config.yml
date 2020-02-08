@@ -1,0 +1,30 @@
+version:
+jobs:
+  build:
+
+    working_directory: ~/sidecar-common
+
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+
+    steps:
+
+      - checkout
+
+      - restore_cache:
+          key: sidecar-common-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline # gets the project dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: sidecar-common-{{ checksum "pom.xml" }}
+
+      - run: mvn clean install
+
+      - store_test_results:
+          path: ~/sidecar-common/target/surefire-reports
+
+      - store_artifacts:
+          path: ~/sidecar-common/target/sidecar-common.jar
