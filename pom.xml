@@ -5,14 +5,14 @@
 
   <groupId>com.instaclustr</groupId>
   <artifactId>sidecar-common</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <name>sidecar-common</name>
   <description>common code for sidecar applications</description>
   <url>https://github.com/instaclustr/sidecar-common</url>
 
   <properties>
-    <instaclustr.commons.version>1.1.0</instaclustr.commons.version>
+    <instaclustr.commons.version>1.2.0</instaclustr.commons.version>
     <jersey.version>2.28</jersey.version>
     <jackson.bom.version>2.9.9</jackson.bom.version>
     <guice.bridge.version>2.5.0-b42</guice.bridge.version>
