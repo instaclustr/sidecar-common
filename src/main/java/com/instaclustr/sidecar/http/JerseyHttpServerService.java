@@ -1,6 +1,5 @@
 package com.instaclustr.sidecar.http;
 
-import javax.ws.rs.core.Application;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
@@ -14,6 +13,7 @@ import org.glassfish.jersey.internal.guava.ThreadFactoryBuilder;
 import org.glassfish.jersey.jdkhttp.JdkHttpHandlerContainer;
 import org.glassfish.jersey.jdkhttp.JdkHttpHandlerContainerProvider;
 import org.glassfish.jersey.process.JerseyProcessingUncaughtExceptionHandler;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,15 +21,35 @@ import org.slf4j.LoggerFactory;
  * A Guava Service that manages a HttpServer for a Jersey application
  */
 public class JerseyHttpServerService extends AbstractIdleService {
+
     private static final Logger logger = LoggerFactory.getLogger(JerseyHttpServerService.class);
 
-    private final JdkHttpHandlerContainer container;
-    private final HttpServer httpServer;
+    private final InetSocketAddress httpServerAddress;
+    private final ResourceConfig resourceConfig;
 
-    public JerseyHttpServerService(final InetSocketAddress httpServerAddress, final Application application) {
-        container = new JdkHttpHandlerContainerProvider().createContainer(JdkHttpHandlerContainer.class, application);
+    private JdkHttpHandlerContainer container;
+    private HttpServer httpServer;
+
+    public JerseyHttpServerService(final InetSocketAddress httpServerAddress, final ResourceConfig resourceConfig) {
+        this.resourceConfig = resourceConfig;
+        this.httpServerAddress = httpServerAddress;
+    }
+
+    public InetSocketAddress getServerInetAddress() {
+        return httpServerAddress;
+    }
+
+    public ResourceConfig getResourceConfig() {
+        return resourceConfig;
+    }
+
+    @Override
+    protected void startUp() throws Exception {
+
+        container = new JdkHttpHandlerContainerProvider().createContainer(JdkHttpHandlerContainer.class, resourceConfig);
 
         try {
+            logger.info("Starting HTTP server on address " + httpServerAddress);
             httpServer = HttpServer.create(httpServerAddress, 0);
 
 
@@ -38,20 +58,12 @@ public class JerseyHttpServerService extends AbstractIdleService {
         }
 
         httpServer.setExecutor(Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                .setNameFormat("jdk-http-server-%d")
-                .setUncaughtExceptionHandler(new JerseyProcessingUncaughtExceptionHandler())
-                .build()));
+                                                                 .setNameFormat("jdk-http-server-%d")
+                                                                 .setUncaughtExceptionHandler(new JerseyProcessingUncaughtExceptionHandler())
+                                                                 .build()));
 
         httpServer.createContext("/", container);
-    }
 
-    //Public for testing
-    public InetSocketAddress getServerInetAddress() {
-        return httpServer.getAddress();
-    }
-
-    @Override
-    protected void startUp() throws Exception {
         httpServer.start();
         container.getApplicationHandler().onStartup(container);
 
@@ -72,5 +84,9 @@ public class JerseyHttpServerService extends AbstractIdleService {
     protected void shutDown() throws Exception {
         container.getApplicationHandler().onShutdown(container);
         httpServer.stop(0);
+    }
+
+    public void shutdown() throws Exception {
+        shutDown();
     }
 }
