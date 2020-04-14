@@ -12,7 +12,7 @@
   <url>https://github.com/instaclustr/sidecar-common</url>
 
   <properties>
-    <instaclustr.commons.version>1.2.1</instaclustr.commons.version>
+    <instaclustr.commons.version>1.2.2</instaclustr.commons.version>
     <jersey.version>2.30.1</jersey.version>
     <jackson.bom.version>2.9.9</jackson.bom.version>
     <guice.bridge.version>2.6.1</guice.bridge.version>
@@ -21,6 +21,7 @@
     <testng.version>6.14.3</testng.version>
     <mockito.version>2.23.4</mockito.version>
     <awaitility.version>3.1.6</awaitility.version>
+    <slf4j.version>1.7.30</slf4j.version>
 
     <maven.source.plugin.version>3.1.0</maven.source.plugin.version>
     <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
@@ -129,7 +130,14 @@
       <artifactId>jersey-hk2</artifactId>
       <version>${jersey.version}</version>
     </dependency>
-
+  
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-nop</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
     <!-- test dependencies -->
 
     <dependency>
