@@ -18,6 +18,7 @@ import com.instaclustr.operations.OperationRequest;
 import com.instaclustr.operations.OperationsExpirationService;
 import com.instaclustr.operations.OperationsModule;
 import com.instaclustr.operations.OperationsService;
+import com.instaclustr.threading.ExecutorsModule;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -51,6 +52,7 @@ public class OperationsExpirationServiceTest {
     public void setup() {
         final Injector injector = Guice.createInjector(
                 new OperationsModule(3),
+                new ExecutorsModule(),
                 new AbstractModule() {
                     @Override
                     protected void configure() {
