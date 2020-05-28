@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -14,9 +15,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,6 +27,8 @@ import com.google.common.collect.Collections2;
 import com.instaclustr.operations.Operation;
 import com.instaclustr.operations.OperationRequest;
 import com.instaclustr.operations.OperationsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Common operation JAX-RS resource exposing operation endpoints.
@@ -33,6 +38,9 @@ import com.instaclustr.operations.OperationsService;
 @Produces(APPLICATION_JSON)
 @Consumes(APPLICATION_JSON)
 public class OperationsResource {
+
+    private static final Logger logger = LoggerFactory.getLogger(OperationsResource.class);
+
     private final OperationsService operationsService;
 
     @Inject
@@ -76,13 +84,28 @@ public class OperationsResource {
 
     @POST
     public Response createNewOperation(@Valid final OperationRequest request) {
+
+        logger.info("Received operation " + request.toString());
+
         final Operation operation = operationsService.submitOperationRequest(request);
 
         final URI operationLocation = UriBuilder.fromResource(OperationsResource.class)
-                                                .path(OperationsResource.class, "getOperationById")
-                                                .build(operation.id);
+            .path(OperationsResource.class, "getOperationById")
+            .build(operation.id);
 
         return Response.created(operationLocation).entity(operation).build();
     }
 
+    @DELETE
+    @Path("{id}")
+    public Response cancelOperation(@NotNull @PathParam("id") final UUID id) {
+        final Optional<Operation> operation = operationsService.operation(id);
+
+        if (operation.isPresent()) {
+            operationsService.closeOperation(operation.get().id);
+            return Response.accepted().build();
+        } else {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+    }
 }
