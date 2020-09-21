@@ -1,5 +1,6 @@
 package com.instaclustr.sidecar.operations;
 
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import javax.inject.Inject;
@@ -19,11 +20,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.google.common.collect.Collections2;
 import com.instaclustr.operations.Operation;
 import com.instaclustr.operations.OperationRequest;
 import com.instaclustr.operations.OperationsService;
@@ -51,26 +55,20 @@ public class OperationsResource {
     @GET
     public Collection<Operation> getOperations(@QueryParam("type") final Set<Class<? extends Operation>> operationTypesFilter,
                                                @QueryParam("state") final Set<Operation.State> statesFilter) {
-        Collection<Operation> operations = operationsService.operations().values();
+
+        final List<Operation> operations = new LinkedList<>(operationsService.operations().values());
+
+        // from latest to oldest, the latest at top
+        Collections.reverse(operations);
 
         if (!operationTypesFilter.isEmpty()) {
-            operations = Collections2.filter(operations, input -> {
-                if (input == null) {
-                    return false;
-                }
-
-                return operationTypesFilter.contains(input.getClass());
-            });
+            return operations.stream().filter(Objects::nonNull)
+                .filter(it -> operationTypesFilter.contains(it.getClass())).collect(toList());
         }
 
         if (!statesFilter.isEmpty()) {
-            operations = Collections2.filter(operations, input -> {
-                if (input == null) {
-                    return false;
-                }
-
-                return statesFilter.contains(input.state);
-            });
+            return operations.stream().filter(Objects::nonNull)
+                .filter(it -> statesFilter.contains(it.state)).collect(toList());
         }
 
         return operations;
