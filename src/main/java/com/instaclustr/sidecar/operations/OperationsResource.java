@@ -1,6 +1,5 @@
 package com.instaclustr.sidecar.operations;
 
-import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import javax.inject.Inject;
@@ -19,15 +18,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.google.common.collect.Collections2;
 import com.instaclustr.operations.Operation;
 import com.instaclustr.operations.OperationRequest;
 import com.instaclustr.operations.OperationsService;
@@ -61,17 +61,29 @@ public class OperationsResource {
         // from latest to oldest, the latest at top
         Collections.reverse(operations);
 
+        Collection<Operation> collection = new ArrayList<>(operations);
+
         if (!operationTypesFilter.isEmpty()) {
-            return operations.stream().filter(Objects::nonNull)
-                .filter(it -> operationTypesFilter.contains(it.getClass())).collect(toList());
+            collection = Collections2.filter(collection, input -> {
+                if (input == null) {
+                    return false;
+                }
+
+                return operationTypesFilter.contains(input.getClass());
+            });
         }
 
         if (!statesFilter.isEmpty()) {
-            return operations.stream().filter(Objects::nonNull)
-                .filter(it -> statesFilter.contains(it.state)).collect(toList());
+            collection = Collections2.filter(collection, input -> {
+                if (input == null) {
+                    return false;
+                }
+
+                return statesFilter.contains(input.state);
+            });
         }
 
-        return operations;
+        return collection;
     }
 
     @GET
