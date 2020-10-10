@@ -1,7 +1,11 @@
 package com.instaclustr.sidecar.http;
 
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +28,14 @@ import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 
 public class JerseyHttpServerModule extends AbstractModule {
-    private InetSocketAddress httpServerAddress;
 
-    public JerseyHttpServerModule(final InetSocketAddress httpServerAddress) {
+    private InetSocketAddress httpServerAddress;
+    private boolean disableCors;
+
+    public JerseyHttpServerModule(final InetSocketAddress httpServerAddress,
+                                  final boolean disableCors) {
         this.httpServerAddress = httpServerAddress;
+        this.disableCors = disableCors;
     }
 
     public JerseyHttpServerModule() {
@@ -44,17 +52,35 @@ public class JerseyHttpServerModule extends AbstractModule {
     @Singleton
     ResourceConfig provideResourceConfig(final GuiceHK2BridgeFeature guiceHK2BridgeFeature,
                                          final CustomObjectMapperFeature customObjectMapperFeature,
-                                         final Injector injector) {
+                                         final Injector injector,
+                                         final CORSFilter corsFilter) {
 
         GuiceInjectorHolder.INSTANCE.setInjector(injector);
 
-        return new ResourceConfig()
-                .packages("com.instaclustr")
-                .register(customObjectMapperFeature)
-                .register(guiceHK2BridgeFeature)
-                .register(DefaultExceptionMapperProvider.class)
-                .register(ValidationConfigurationContextResolver.class)
-                .property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+        ResourceConfig config = new ResourceConfig()
+            .packages("com.instaclustr")
+            .register(customObjectMapperFeature)
+            .register(guiceHK2BridgeFeature)
+            .register(DefaultExceptionMapperProvider.class)
+            .register(ValidationConfigurationContextResolver.class)
+            .property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+
+        if (!disableCors) {
+            config.register(corsFilter);
+        }
+
+        return config;
+    }
+
+    static class CORSFilter implements ContainerResponseFilter {
+
+        @Override
+        public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) throws IOException {
+            responseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
+            responseContext.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+            responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
+            responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+        }
     }
 
     /**
@@ -63,6 +89,7 @@ public class JerseyHttpServerModule extends AbstractModule {
      * which provides its default ObjectMapper hence if we want to provide our own, this is the standard way how to do that.
      */
     static class CustomObjectMapperFeature implements Feature {
+
         private final ObjectMapper objectMapper;
 
         @Inject
@@ -78,6 +105,7 @@ public class JerseyHttpServerModule extends AbstractModule {
     }
 
     static class GuiceHK2BridgeFeature implements Feature {
+
         private final Injector injector;
 
         @Inject
