@@ -12,7 +12,7 @@
   <url>https://github.com/instaclustr/sidecar-common</url>
   
   <properties>
-    <instaclustr.commons.version>1.4.7</instaclustr.commons.version>
+    <instaclustr.commons.version>1.4.9</instaclustr.commons.version>
     <jersey.version>2.35</jersey.version>
     <jackson.bom.version>2.12.2</jackson.bom.version>
     <guice.bridge.version>2.6.1</guice.bridge.version>
