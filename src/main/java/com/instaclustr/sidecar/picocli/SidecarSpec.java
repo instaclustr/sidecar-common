@@ -40,7 +40,7 @@ public class SidecarSpec {
     @Option(names = {"-e", "--operations-expiration"},
         description = "Period after which finished operations are deleted.",
         converter = TimeMeasureTypeConverter.class)
-    public Time operationsExpirationPeriod = new Time(1L, HOURS);
+    public Time operationsExpirationPeriod = new Time(1L, Time.TimeUnit.HOURS);
 
     @Option(names = {"--disable-cors"}, description = "if specified, CORS will be disabled, it is enabled by default")
     public boolean disableCors;
