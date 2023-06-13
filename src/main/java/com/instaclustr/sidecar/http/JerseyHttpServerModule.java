@@ -1,10 +1,5 @@
 package com.instaclustr.sidecar.http;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -18,7 +13,11 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.ProvidesIntoSet;
 import com.instaclustr.guice.GuiceInjectorHolder;
 import com.instaclustr.sidecar.jersey.DefaultExceptionMapperProvider;
-import com.instaclustr.sidecar.validation.ValidationConfigurationContextResolver;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.InjectionManagerProvider;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -58,11 +57,11 @@ public class JerseyHttpServerModule extends AbstractModule {
         GuiceInjectorHolder.INSTANCE.setInjector(injector);
 
         ResourceConfig config = new ResourceConfig()
+            .property("jersey.config.server.wadl.disableWadl", "true")
             .packages("com.instaclustr")
             .register(customObjectMapperFeature)
             .register(guiceHK2BridgeFeature)
             .register(DefaultExceptionMapperProvider.class)
-            .register(ValidationConfigurationContextResolver.class)
             .property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 
         if (!disableCors) {

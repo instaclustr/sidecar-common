@@ -1,10 +1,9 @@
 package com.instaclustr.sidecar.jersey;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-
 import com.instaclustr.sidecar.jersey.OperationTypeIdParamConverterProvider.InvalidTypeIdException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class InvalidTypeIdExceptionMapperProvider implements ExceptionMapper<InvalidTypeIdException> {

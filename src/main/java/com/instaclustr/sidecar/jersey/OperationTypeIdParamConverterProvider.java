@@ -1,30 +1,25 @@
 package com.instaclustr.sidecar.jersey;
 
 import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
-import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
 import com.google.inject.TypeLiteral;
 import com.instaclustr.operations.Operation;
-import org.glassfish.jersey.server.validation.ValidationError;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class OperationTypeIdParamConverterProvider implements ParamConverterProvider {
     private static final Type PARAMETER_TYPE = new TypeLiteral<Class<? extends Operation>>() {}.getType();
 
-    private final Operation.TypeIdResolver typeIdResolver;
-
     @Inject
-    public OperationTypeIdParamConverterProvider(final Operation.TypeIdResolver typeIdResolver) {
-        this.typeIdResolver = typeIdResolver;
-    }
+    private Operation.TypeIdResolver typeIdResolver;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -63,14 +58,8 @@ public class OperationTypeIdParamConverterProvider implements ParamConverterProv
     static class InvalidTypeIdException extends WebApplicationException {
 
         private static Response buildResponse(final String typeId, final Set<String> possibleTypes) {
-            final ValidationError validationError = new ValidationError();
-            validationError.setInvalidValue(typeId);
-            validationError.setMessage("Operation type is invalid, possible types: " + possibleTypes);
-
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(validationError)
-                    .build();
+            // TODO
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         InvalidTypeIdException(final String typeId, final Set<String> possibleTypes) {
