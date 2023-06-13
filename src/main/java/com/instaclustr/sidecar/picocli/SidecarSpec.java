@@ -1,13 +1,11 @@
 package com.instaclustr.sidecar.picocli;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-
-import java.net.InetSocketAddress;
-
 import com.instaclustr.measure.Time;
 import com.instaclustr.picocli.typeconverter.ServerInetSocketAddressTypeConverter;
 import com.instaclustr.picocli.typeconverter.TimeMeasureTypeConverter;
 import picocli.CommandLine.Option;
+
+import java.net.InetSocketAddress;
 
 /**
  * Class holding default / common command line arguments.

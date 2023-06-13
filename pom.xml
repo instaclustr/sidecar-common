@@ -5,32 +5,33 @@
   
   <groupId>com.instaclustr</groupId>
   <artifactId>sidecar-common</artifactId>
-  <version>1.3.18</version>
+  <version>2.0.0-SNAPSHOT</version>
   
   <name>sidecar-common</name>
   <description>common code for sidecar applications</description>
   <url>https://github.com/instaclustr/sidecar-common</url>
   
   <properties>
-    <instaclustr.commons.version>1.5.0</instaclustr.commons.version>
-    <jersey.version>2.35</jersey.version>
-    <jackson.bom.version>2.12.2</jackson.bom.version>
-    <guice.bridge.version>2.6.1</guice.bridge.version>
-    <guava.version>28.1-jre</guava.version>
-    
-    <testng.version>6.14.3</testng.version>
-    <mockito.version>2.23.4</mockito.version>
-    <awaitility.version>3.1.6</awaitility.version>
+    <instaclustr.commons.version>2.0.0</instaclustr.commons.version>
+    <jersey.version>3.1.2</jersey.version>
+    <jackson.bom.version>2.13.4</jackson.bom.version>
+    <guice.bridge.version>3.0.4</guice.bridge.version>
+
+    <junit.version>4.13.2</junit.version>
+    <mockito.version>4.9.0</mockito.version>
     <slf4j.version>1.7.30</slf4j.version>
     
     <maven.source.plugin.version>3.1.0</maven.source.plugin.version>
     <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
     <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
     <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <git.command.plugin.version>2.2.4</git.command.plugin.version>
-    
+
+    <java.version>11</java.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
@@ -92,25 +93,13 @@
       <artifactId>commons</artifactId>
       <version>${instaclustr.commons.version}</version>
     </dependency>
-    
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
-    </dependency>
-    
+
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-jdk-http</artifactId>
       <version>${jersey.version}</version>
     </dependency>
-    
-    <dependency>
-      <groupId>org.glassfish.jersey.ext</groupId>
-      <artifactId>jersey-bean-validation</artifactId>
-      <version>${jersey.version}</version>
-    </dependency>
-    
+
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
@@ -143,14 +132,14 @@
     </dependency>
     
     <!-- test dependencies -->
-    
+
     <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>${testng.version}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -188,47 +177,13 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven.jar.plugin.version}</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-            <manifestEntries>
-              <Git-Commit>${git.commit.id}</Git-Commit>
-              <Build-Time>${git.build.time}</Build-Time>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
-        <version>${git.command.plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-        </configuration>
-      </plugin>
       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>8</source>
-          <target>8</target>
+          <release>8</release>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>

@@ -1,13 +1,5 @@
 package com.instaclustr.sidecar.operations;
 
-import static com.instaclustr.operations.Operation.State.RUNNING;
-import static com.instaclustr.operations.OperationBindings.installOperationBindings;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
-
-import java.util.Optional;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -19,8 +11,16 @@ import com.instaclustr.operations.OperationsExpirationService;
 import com.instaclustr.operations.OperationsModule;
 import com.instaclustr.operations.OperationsService;
 import com.instaclustr.threading.ExecutorsModule;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Optional;
+
+import static com.instaclustr.operations.Operation.State.RUNNING;
+import static com.instaclustr.operations.OperationBindings.installOperationBindings;
+import static org.junit.Assert.assertTrue;
+
 
 public class OperationsExpirationServiceTest {
 
@@ -48,7 +48,7 @@ public class OperationsExpirationServiceTest {
         }
     }
 
-    @BeforeTest
+    @Before
     public void setup() {
         final Injector injector = Guice.createInjector(
                 new OperationsModule(3),
@@ -76,16 +76,16 @@ public class OperationsExpirationServiceTest {
 
         // after two seconds, operation is still running
         Thread.sleep(2000);
-        final Optional<Operation> submittedOperation = operationsService.operation(testingOperation.id);
+        final Optional<Operation<?>> submittedOperation = operationsService.operation(testingOperation.id);
         assertTrue(submittedOperation.isPresent());
 
         // after another two seconds, service is still running and it was not expired as expiration runs every three seconds
         Thread.sleep(2000);
         assertTrue(operationsService.operation(testingOperation.id).isPresent());
-        assertSame(submittedOperation.get().state, RUNNING);
+        Assert.assertEquals(submittedOperation.get().state, RUNNING);
 
         Thread.sleep(5000);
         // after 5 seconds (9 in total from start of the operation submission), operation is expired
-        assertFalse(operationsService.operation(testingOperation.id).isPresent());
+        Assert.assertFalse(operationsService.operation(testingOperation.id).isPresent());
     }
 }
