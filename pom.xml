@@ -16,7 +16,7 @@
     <jersey.version>2.35</jersey.version>
     <jackson.bom.version>2.12.2</jackson.bom.version>
     <guice.bridge.version>2.6.1</guice.bridge.version>
-    <guava.version>28.1-jre</guava.version>
+    <guava.version>32.0.0-jre</guava.version>
     
     <testng.version>6.14.3</testng.version>
     <mockito.version>2.23.4</mockito.version>
